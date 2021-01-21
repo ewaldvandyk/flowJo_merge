@@ -105,7 +105,6 @@ get_freq_types <- function(dataDir, filePattern = "FlowJo"){
   return(freqTypes)
 }
 
-
 load_ref_tree <- function(refYamlFile){
   yaml_str <- read_yaml(file = refYamlFile)
   yaml_lst <- yaml.load(string = yaml_str)
@@ -114,7 +113,6 @@ load_ref_tree <- function(refYamlFile){
   return(refTree)
   
 }
-
 
 gen_NA_matrix <- function(dataDir, refTree){
   #Get alias list from refTree
