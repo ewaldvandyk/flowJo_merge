@@ -223,6 +223,8 @@ dataMat2xlsx <- function(dataMat, xlsxFile){
   dataDF <- cbind(data.frame(`Sample names` = rownames(dataMat), check.names = F) , data.frame(dataMat, check.names = F))
   keepColI <- map_lgl(.x = dataDF, .f = function(x) any(!is.na(x)))
   dataDF <- dataDF[keepColI]
+  keepRowI <- map_lgl(.x = seq_along(rownames(dataDF)), .f = function(x) any(!is.na(dataDF[x,-1])))
+  dataDF <- dataDF[keepRowI,]
   xlsx::write.xlsx(x = dataDF, file = path.expand(xlsxFile), showNA = F, row.names = F)
   return(dataDF)
 }
