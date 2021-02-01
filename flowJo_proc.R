@@ -157,6 +157,7 @@ gen_NA_matrix <- function(dataDir, refTree){
   # print(freqTypeVec)
   
   #Generate column names with alias and frequency types
+  print(freqTypeVec)
   fields <- as.vector(t(outer(aliasVec, freqTypeVec, FUN = mixAliasFreqType)))
   
   #Generate sample name vector
@@ -220,5 +221,8 @@ prioritize_alias <- function(alias1, alias2){
 
 dataMat2xlsx <- function(dataMat, xlsxFile){
   dataDF <- cbind(data.frame(`Sample names` = rownames(dataMat), check.names = F) , data.frame(dataMat, check.names = F))
-  xlsx::write.xlsx(x = dataDF, file = path.expand(xlsxFile), showNA = F)
+  keepColI <- map_lgl(.x = dataDF, .f = function(x) any(!is.na(x)))
+  dataDF <- dataDF[keepColI]
+  xlsx::write.xlsx(x = dataDF, file = path.expand(xlsxFile), showNA = F, row.names = F)
+  return(dataDF)
 }
