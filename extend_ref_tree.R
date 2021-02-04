@@ -1,7 +1,7 @@
 #Input parameters
-input_refTree_file <- "~/data/Hannah/blood_flowJo/2021_01_21/ref_tree_NBC_2021_01_22.yml"
+input_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_02/refTree_v4.yml"
 cohort_folder <- "~/data/Hannah/blood_flowJo/2021_01_21/B16NBC/" # Data folder containing samples
-output_refTree_file <- "~/data/Hannah/blood_flowJo/2021_01_21/ref_tree_NBC_2021_01_22_v2.yml" 
+output_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_02/refTree_v5.yml" 
 
 #Get current file location
 srcFile <- NULL

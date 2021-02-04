@@ -1,7 +1,7 @@
 #Input parameters
-cohort_folder <- "~/data/Noor/flowJow_2020_09_18/" # Data folder containing samples
+cohort_folder <- "~/data/Hannah/blood_flowJo/2021_01_21/B16BHW/" # Data folder containing samples
 
-output_refTree_file <- "~/devel/R/flowJo_merge/output/ref_tree.yaml" #Text file with reference tree and aliases
+output_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_02/refTree_v3.yml" #Text file with reference tree and aliases
 
 #Get current file location
 srcFile <- NULL

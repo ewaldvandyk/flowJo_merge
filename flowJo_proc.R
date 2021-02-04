@@ -22,6 +22,18 @@ sampDir2dfList <- function(sampDir, pattern = "FlowJo"){
   return(df_list)
 }
 
+cohortDir2dfList <-function(cohortDir, pattern = "FlowJo"){
+  sampDirs <- list.dirs(cohortDir, full.names = F, recursive = F)
+  df_list <- list()
+  for (sampDirName in sampDirs){
+    print(paste0("Loading ", sampDirName))
+    sampDir <- file.path(cohortDir, sampDirName)
+    curr_df_list <- sampDir2dfList(sampDir, pattern = pattern)
+    df_list <- c(df_list, curr_df_list)
+  }
+  return(df_list)
+}
+
 dfList2Tree <- function(df_list, pathPattern = "^[cC]ell"){
   pathStrs <- c()
   for (i in seq_along(df_list)){
@@ -33,6 +45,7 @@ dfList2Tree <- function(df_list, pathPattern = "^[cC]ell"){
     pathStrs <- c(pathStrs, currPaths)
   }
   pathStrs <- unique(pathStrs)
+  pathStrs <- unique(pathStrsExpand(pathStrs))
   pathAlias <- map_chr(.x = pathStrs, .f = function(x) paste0("<new>", str_split(x, "/")[[1]][[length(str_split(x, "/")[[1]])]]))
   
   # print(pathStrs)
@@ -41,6 +54,24 @@ dfList2Tree <- function(df_list, pathPattern = "^[cC]ell"){
   # print(pathDF)
   tree <- as.Node(pathDF)
   return(tree)
+}
+
+pathStrsExpand <- function(pathStrs){
+  paths <- c()
+  for (i in seq_along(pathStrs)){
+    curr_split <- str_split(pathStrs[i], pattern = "/")[[1]]
+    currPaths <- c()
+    if (length(curr_split) <= 1){
+      currPaths <- pathStrs[i]
+    } else {
+      for (j in 2:length(curr_split)){
+        currPaths <- c(currPaths, paste(curr_split[1:j], collapse = "/")) 
+      }  
+    }
+    paths <- c(paths, currPaths)
+  }
+
+  return(paths)
 }
 
 dfList2freqTypes <- function(df_list, pathPattern = "^[cC]ell"){
@@ -75,20 +106,8 @@ colNames2freqTypes <- function(colNames){
 }
 
 make_ref_tree <- function(dataDir, filePattern = "FlowJo"){
-  sampDirs <- list.dirs(dataDir, full.names = F, recursive = F)
-  df_list <- list()
-  for (sampDirName in sampDirs){
-    sampDir <- file.path(dataDir, sampDirName)
-    curr_df_list <- sampDir2dfList(sampDir, pattern = filePattern)
-    df_list <- c(df_list, curr_df_list)
-  }
-  
+  df_list <- cohortDir2dfList(cohortDir = dataDir, pattern = filePattern)
   sampTree <- dfList2Tree(df_list)
-  # yamlStr <- as.yaml(as.list(sampTree))
-  # 
-  # con <- file(refYamlFile, "w")
-  # yaml::write_yaml(file = con, x = yamlStr)
-  # close(con)
   return(sampTree)
   
 }
@@ -111,14 +130,13 @@ load_ref_tree <- function(refYamlFile){
 }
 
 add_chains_2_ref_tree <- function(inputTree, dataDir, filePattern = "FlowJo"){
-  sampDirs <- list.dirs(dataDir, full.names = F, recursive = F)
-  df_list <- list()
-  for (sampDirName in sampDirs){
-    sampDir <- file.path(dataDir, sampDirName)
-    curr_df_list <- sampDir2dfList(sampDir, pattern = filePattern)
-    df_list <- c(df_list, curr_df_list)
-  }
+  df_list <- cohortDir2dfList(cohortDir = dataDir, pattern = filePattern)
   newTree <- dfList2Tree(df_list)
+  outputTree <- merge_trees(inputTree, newTree)
+  return(outputTree)
+}
+
+merge_trees <- function(inputTree, newTree){
   newTreeDF <- get_strPath_alias_df(newTree)
   inputTreeDF <- get_strPath_alias_df(inputTree)
   mergeDF <- merge(inputTreeDF, newTreeDF, by = "pathString", all = T)
@@ -129,19 +147,23 @@ add_chains_2_ref_tree <- function(inputTree, dataDir, filePattern = "FlowJo"){
   return(outputTree)
 }
 
+prioritize_alias <- function(alias1, alias2){
+  for (i in seq_along(alias1)){
+    if (is.na(alias1[i])){
+      alias1[i] <- alias2[i]
+    }
+  }
+  return(alias1)
+}
+
+
 get_strPath_alias_df <- function(tree){
   b <- tree$Get(attribute = function(node) c(node$pathString, if (is.null(node$alias)) NA else node$alias))
   df <- data.frame(pathString = b[1,], alias = b[2,], stringsAsFactors = F)
 }
 
 get_freq_types <- function(dataDir, filePattern = "FlowJo"){
-  sampDirs <- list.dirs(dataDir, full.names = F, recursive = F)
-  df_list <- list()
-  for (sampDirName in sampDirs){
-    sampDir <- file.path(dataDir, sampDirName)
-    curr_df_list <- sampDir2dfList(sampDir, pattern = filePattern)
-    df_list <- c(df_list, curr_df_list)
-  }
+  df_list <- cohortDir2dfList(cohortDir = dataDir, pattern = filePattern)
   freqTypes <- dfList2freqTypes(df_list)
   return(freqTypes)
 }
@@ -209,15 +231,7 @@ fill_matrix <- function(dataDir, refTree, dataMat, pattern = "FlowJo", pathPatte
 mixAliasFreqType <- function(alias, freqType){
   return(paste0(alias, " (", freqType, ")"))
 }
-prioritize_alias <- function(alias1, alias2){
-  alias <- alias1
-  for (i in seq_along(alias1)){
-    if (is.na(alias1[i])){
-      alias1[i] <- alias2[i]
-    }
-  }
-  return(alias1)
-}
+
 
 dataMat2xlsx <- function(dataMat, xlsxFile){
   dataDF <- cbind(data.frame(`Sample names` = rownames(dataMat), check.names = F) , data.frame(dataMat, check.names = F))
