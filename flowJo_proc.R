@@ -1,5 +1,5 @@
 #Install and attach packages
-required_packages <- c("purrr", "data.tree", "DiagrammeR", "xlsx", "yaml", "stringr")
+required_packages <- c("purrr", "data.tree", "DiagrammeR", "xlsx", "yaml", "stringr", "plyr")
 new_packages <- setdiff(required_packages, rownames(installed.packages()))
 install.packages(new_packages)
 for (pkg in required_packages){
@@ -20,6 +20,30 @@ sampDir2dfList <- function(sampDir, pattern = "FlowJo"){
                  as.data.frame = TRUE, 
                  stringsAsFactors = FALSE, check.names = FALSE)
   return(df_list)
+}
+
+xlsxFileList2df_list <- function(fullFiles){
+  df_list <- map(fullFiles, xlsx::read.xlsx, 
+                 sheetIndex = 1, 
+                 as.data.frame = TRUE, 
+                 stringsAsFactors = FALSE, check.names = FALSE)
+  return(df_list)
+}
+
+merge_cohorts <- function(cohort_names, cohort_dfs){
+  for (ci in seq_along(cohort_dfs)){
+    numRow <- nrow(cohort_dfs[[ci]])
+    cohort_dfs[[ci]] <- cbind(data.frame(Cohort = rep(cohort_names[[ci]])), cohort_dfs[[ci]])
+  }
+  merged_df <- rbind.fill(cohort_dfs) 
+  # for (ci in seq_along(cohort_dfs)){
+  #   if (ci == 1){
+  #     merged_df <- cohort_dfs[[ci]]
+  #   }else{
+  #     merged_df <- rbind(merged_df, cohort_dfs[[ci]])
+  #   }
+  # }
+  return(merged_df)
 }
 
 cohortDir2dfList <-function(cohortDir, pattern = "FlowJo"){
@@ -156,7 +180,6 @@ prioritize_alias <- function(alias1, alias2){
   return(alias1)
 }
 
-
 get_strPath_alias_df <- function(tree){
   b <- tree$Get(attribute = function(node) c(node$pathString, if (is.null(node$alias)) NA else node$alias))
   df <- data.frame(pathString = b[1,], alias = b[2,], stringsAsFactors = F)
@@ -242,3 +265,8 @@ dataMat2xlsx <- function(dataMat, xlsxFile){
   xlsx::write.xlsx(x = dataDF, file = path.expand(xlsxFile), showNA = F, row.names = F)
   return(dataDF)
 }
+
+df2xlsx <- function(df, xlsxFile){
+  xlsx::write.xlsx(x = df, file = path.expand(xlsxFile), showNA = F, row.names = F)
+}
+
