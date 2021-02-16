@@ -6,11 +6,23 @@ for (pkg in required_packages){
   library(pkg, character.only = T)
 }
 
+cohortDir2dfList <-function(cohortDir, file_pattern = "FlowJo"){
+  sampDirs <- list.dirs(cohortDir, full.names = F, recursive = F)
+  df_list <- list()
+  for (sampDirName in sampDirs){
+    print(paste0("Loading ", sampDirName))
+    sampDir <- file.path(cohortDir, sampDirName)
+    curr_df_list <- sampDir2dfList(sampDir, file_pattern = file_pattern)
+    names(curr_df_list) <- rep(sampDirName, length(curr_df_list))
+    df_list <- c(df_list, curr_df_list)
+  }
+  return(df_list)
+}
 
-sampDir2dfList <- function(sampDir, pattern = "FlowJo"){
+sampDir2dfList <- function(sampDir, file_pattern = "FlowJo"){
   extPattern <- ".xls$"
   fileNames <- dir(sampDir)
-  keepI <- intersect(grep(pattern = extPattern, x = fileNames), grep(pattern = pattern, x = fileNames))
+  keepI <- intersect(grep(pattern = extPattern, x = fileNames), grep(pattern = file_pattern, x = fileNames))
   
   fileNames <- fileNames[keepI]
   
@@ -46,17 +58,6 @@ merge_cohorts <- function(cohort_names, cohort_dfs){
   return(merged_df)
 }
 
-cohortDir2dfList <-function(cohortDir, pattern = "FlowJo"){
-  sampDirs <- list.dirs(cohortDir, full.names = F, recursive = F)
-  df_list <- list()
-  for (sampDirName in sampDirs){
-    print(paste0("Loading ", sampDirName))
-    sampDir <- file.path(cohortDir, sampDirName)
-    curr_df_list <- sampDir2dfList(sampDir, pattern = pattern)
-    df_list <- c(df_list, curr_df_list)
-  }
-  return(df_list)
-}
 
 dfList2Tree <- function(df_list, pathPattern = "^[cC]ell"){
   pathStrs <- c()
@@ -129,13 +130,6 @@ colNames2freqTypes <- function(colNames){
   return(freqTypes)
 }
 
-make_ref_tree <- function(dataDir, filePattern = "FlowJo"){
-  df_list <- cohortDir2dfList(cohortDir = dataDir, pattern = filePattern)
-  sampTree <- dfList2Tree(df_list)
-  return(sampTree)
-  
-}
-
 tree2yamlFile <- function(tree, refYamlFile) {
   yamlStr <- as.yaml(as.list(tree))
   con <- file(refYamlFile, "w")
@@ -153,8 +147,7 @@ load_ref_tree <- function(refYamlFile){
   
 }
 
-add_chains_2_ref_tree <- function(inputTree, dataDir, filePattern = "FlowJo"){
-  df_list <- cohortDir2dfList(cohortDir = dataDir, pattern = filePattern)
+add_chains_2_ref_tree <- function(inputTree, df_list){
   newTree <- dfList2Tree(df_list)
   outputTree <- merge_trees(inputTree, newTree)
   return(outputTree)
@@ -185,20 +178,14 @@ get_strPath_alias_df <- function(tree){
   df <- data.frame(pathString = b[1,], alias = b[2,], stringsAsFactors = F)
 }
 
-get_freq_types <- function(dataDir, filePattern = "FlowJo"){
-  df_list <- cohortDir2dfList(cohortDir = dataDir, pattern = filePattern)
-  freqTypes <- dfList2freqTypes(df_list)
-  return(freqTypes)
-}
-
-gen_NA_matrix <- function(dataDir, refTree){
+gen_NA_matrix <- function(df_list, refTree){
   #Get alias list from refTree
   aliasVec <- refTree$Get('alias')
   keepI <- !is.na(aliasVec)
   aliasVec <- aliasVec[keepI]
   
   #Get all frequency types
-  freqTypeVec <- get_freq_types(dataDir)
+  freqTypeVec <- dfList2freqTypes(df_list)
   # print(freqTypeVec)
   
   #Generate column names with alias and frequency types
@@ -206,7 +193,7 @@ gen_NA_matrix <- function(dataDir, refTree){
   fields <- as.vector(t(outer(aliasVec, freqTypeVec, FUN = mixAliasFreqType)))
   
   #Generate sample name vector
-  sampNames <- list.dirs(dataDir, full.names = F, recursive = F)
+  sampNames <- unique(names(df_list))
   
   nCol <- length(fields)
   nRow <- length(sampNames)
@@ -218,35 +205,32 @@ gen_NA_matrix <- function(dataDir, refTree){
   return(naMatrix)
 }
 
-fill_matrix <- function(dataDir, refTree, dataMat, pattern = "FlowJo", pathPattern = "^[cC]ell"){
-  extPattern <- ".xls$"
-  sampNames <- list.dirs(dataDir, full.names = F, recursive = F)
-  for (sampName in sampNames){
-    sampDir <- file.path(dataDir, sampName)
-    df_list <- sampDir2dfList(sampDir, pattern = pattern)
-    for (filei in seq_along(df_list)){
-      currColNames <- names(df_list[[filei]])
-      keepI <- grep(pattern = pathPattern, x = currColNames)
-      currColNames <- currColNames[keepI]
-      currTreePaths <- colNames2treePaths(currColNames)
-      currTreePaths <- sub(pattern = paste0('^', refTree$name, '/'), replacement = '', x = currTreePaths)
-      # print(currTreePaths)
-      currFreqTypes <- colNames2freqTypes(currColNames)
-      # print(currFreqTypes)
-      for (coli in seq_along(currColNames)){
-        field <- currColNames[[coli]]
-        treePath <- currTreePaths[[coli]]
-        freqType <- currFreqTypes[[coli]]
-        freq <- as.double(sub(pattern = "\\s*%\\s*$", replacement = "", x = df_list[[filei]][[field]][[1]]))
-        refNode <- Navigate(refTree, path = treePath)
-        if (is.null(refNode)){
-          stop("Cohort contains a chain not found in reference tree. Run 'extend_ref_tree.R'")
-        }
-        colName <- mixAliasFreqType(refNode$alias, freqType)
-        dataMat[sampName, colName] <- freq
-        
+fill_matrix <- function(df_list, refTree, dataMat, pathPattern = "^[cC]ell"){
+  sampNames <- names(df_list)
+  for (filei in seq_along(df_list)){
+    sampName <- sampNames[filei]
+    currColNames <- names(df_list[[filei]])
+    keepI <- grep(pattern = pathPattern, x = currColNames)
+    currColNames <- currColNames[keepI]
+    currTreePaths <- colNames2treePaths(currColNames)
+    currTreePaths <- sub(pattern = paste0('^', refTree$name, '/'), replacement = '', x = currTreePaths)
+    # print(currTreePaths)
+    currFreqTypes <- colNames2freqTypes(currColNames)
+    # print(currFreqTypes)
+    for (coli in seq_along(currColNames)){
+      field <- currColNames[[coli]]
+      treePath <- currTreePaths[[coli]]
+      freqType <- currFreqTypes[[coli]]
+      freq <- as.double(sub(pattern = "\\s*%\\s*$", replacement = "", x = df_list[[filei]][[field]][[1]]))
+      refNode <- Navigate(refTree, path = treePath)
+      if (is.null(refNode)){
+        stop("Cohort contains a chain not found in reference tree. Run 'extend_ref_tree.R'")
       }
+      colName <- mixAliasFreqType(refNode$alias, freqType)
+      dataMat[sampName, colName] <- freq
+      
     }
+    
   }
   return(dataMat)
 }
@@ -254,7 +238,6 @@ fill_matrix <- function(dataDir, refTree, dataMat, pattern = "FlowJo", pathPatte
 mixAliasFreqType <- function(alias, freqType){
   return(paste0(alias, " (", freqType, ")"))
 }
-
 
 dataMat2xlsx <- function(dataMat, xlsxFile){
   dataDF <- cbind(data.frame(`Sample names` = rownames(dataMat), check.names = F) , data.frame(dataMat, check.names = F))

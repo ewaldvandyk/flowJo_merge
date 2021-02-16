@@ -1,7 +1,7 @@
 #Input parameters
-input_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_02/refTree_v4.yml"
-cohort_folder <- "~/data/Hannah/blood_flowJo/2021_01_21/B16NBC/" # Data folder containing samples
-output_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_02/refTree_v5.yml" 
+input_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_16/refTree_v1.yml"
+cohort_folder <- "~/data/Hannah/blood_flowJo/2021_02_16/Neo Adjuvant cohort/B16NBC/" # Data folder containing samples
+output_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_16/refTree_v2.yml" 
 
 #Get current file location
 srcFile <- NULL
@@ -15,6 +15,7 @@ flowJo_folder <- dirname(srcFile$filename)
 #Execute
 source(file.path(flowJo_folder, "flowJo_proc.R"))
 input_refTree <- load_ref_tree(refYamlFile = input_refTree_file)
-output_refTree <- add_chains_2_ref_tree(inputTree = input_refTree, dataDir = cohort_folder, filePattern = "FlowJo")
+flowJoDFs <- cohortDir2dfList(cohortDir = cohort_folder, file_pattern  = "FlowJo")
+output_refTree <- add_chains_2_ref_tree(inputTree = input_refTree, df_list = flowJoDFs)
 refTree <- tree2yamlFile(tree = output_refTree, refYamlFile = output_refTree_file)
 print(refTree)
