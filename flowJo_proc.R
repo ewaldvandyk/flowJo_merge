@@ -12,7 +12,7 @@ cohortDir2dfList <-function(cohortDir,
   sampDirs <- list.dirs(cohortDir, full.names = F, recursive = F)
   df_list <- list()
   for (sampDirName in sampDirs){
-    print(paste0("Loading ", sampDirName))
+    
     sampDir <- file.path(cohortDir, sampDirName)
     curr_df_list <- sampDir2dfList(sampDir, 
                                    file_pattern = file_pattern, 
@@ -39,7 +39,7 @@ sampDir2dfList <- function(sampDir,
       sampDir <- file.path(sampDir, timeDirs[[1]])
     }
   }
-  print(sampDir)
+  print(paste0("Loading ", sampDir))
   fileNames <- dir(sampDir)
   keepI <- grep(pattern = file_pattern, x = fileNames)
   fileNames <- fileNames[keepI]
@@ -132,13 +132,13 @@ dfList2freqTypes <- function(df_list, pathPattern = "^[cC]ell"){
 }
 
 colNames2treePaths <- function(colNames){
-  treePaths <- gsub(pattern = '\\s*/\\s*', replacement = '/', x = colNames)
-  treePaths <- gsub(pattern = '\\|.*$', replacement = '', x = treePaths)
-  treePaths <- gsub(pattern = '\\s+$', replacement = '', x = treePaths)
-  treePaths <- gsub(pattern = '^\\s+', replacement = '', x = treePaths)
-  treePaths <- gsub(pattern = '\\s+', replacement = ' ', x = treePaths)
-  treePaths <- gsub(pattern = '\\s+,', replacement = ',', x = treePaths)
-  treePaths <- gsub(pattern = ',\\s+', replacement = ', ', x = treePaths)
+  treePaths <- gsub(pattern = '\\s*/\\s*', replacement = '/', x = colNames) #Remove spaces between "/"
+  treePaths <- gsub(pattern = '\\|.*$', replacement = '', x = treePaths) # Remove "|freq of ..." string
+  treePaths <- gsub(pattern = '\\s+$', replacement = '', x = treePaths) # Remove spaces end of path
+  treePaths <- gsub(pattern = '^\\s+', replacement = '', x = treePaths) # Remove spaces in begining of path
+  treePaths <- gsub(pattern = '\\s+', replacement = ' ', x = treePaths) # Remove all double spaces
+  treePaths <- gsub(pattern = '\\s+,', replacement = ',', x = treePaths) # Remove spaces before comma
+  treePaths <- gsub(pattern = ',\\s+', replacement = ', ', x = treePaths) # Ensure only one space after comma
   return(treePaths)
 }
 
