@@ -6,24 +6,42 @@ for (pkg in required_packages){
   library(pkg, character.only = T)
 }
 
-cohortDir2dfList <-function(cohortDir, file_pattern = "FlowJo"){
+cohortDir2dfList <-function(cohortDir, 
+                            file_pattern = "FlowJo.*\\.xls$", 
+                            time_pattern = NULL){
   sampDirs <- list.dirs(cohortDir, full.names = F, recursive = F)
   df_list <- list()
   for (sampDirName in sampDirs){
     print(paste0("Loading ", sampDirName))
     sampDir <- file.path(cohortDir, sampDirName)
-    curr_df_list <- sampDir2dfList(sampDir, file_pattern = file_pattern)
+    curr_df_list <- sampDir2dfList(sampDir, 
+                                   file_pattern = file_pattern, 
+                                   time_pattern = time_pattern)
     names(curr_df_list) <- rep(sampDirName, length(curr_df_list))
     df_list <- c(df_list, curr_df_list)
   }
   return(df_list)
 }
 
-sampDir2dfList <- function(sampDir, file_pattern = "FlowJo"){
-  extPattern <- ".xls$"
+sampDir2dfList <- function(sampDir, 
+                           file_pattern = "FlowJo.*\\.xls$", 
+                           time_pattern = NULL){
+  if (!is.null(time_pattern)){
+    timeDirs <- list.dirs(sampDir, full.names = F, recursive = F)
+    keepI <- grep(pattern = time_pattern, x = timeDirs)
+    timeDirs <- timeDirs[keepI]
+    if (length(timeDirs) == 0){
+      return(list())
+    } else if (length(timeDirs) > 1){
+      warning(paste0("Sample ignored due to ambiguous time points in ", sampDir))
+      return(list())
+    } else {
+      sampDir <- file.path(sampDir, timeDirs[[1]])
+    }
+  }
+  print(sampDir)
   fileNames <- dir(sampDir)
-  keepI <- intersect(grep(pattern = extPattern, x = fileNames), grep(pattern = file_pattern, x = fileNames))
-  
+  keepI <- grep(pattern = file_pattern, x = fileNames)
   fileNames <- fileNames[keepI]
   
   fullFiles <- map_chr(fileNames, function(x) file.path(sampDir, x))
