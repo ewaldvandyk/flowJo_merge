@@ -66,14 +66,19 @@ merge_cohorts <- function(cohort_names, cohort_dfs){
     cohort_dfs[[ci]] <- cbind(data.frame(Cohort = rep(cohort_names[[ci]])), cohort_dfs[[ci]])
   }
   merged_df <- rbind.fill(cohort_dfs) 
-  # for (ci in seq_along(cohort_dfs)){
-  #   if (ci == 1){
-  #     merged_df <- cohort_dfs[[ci]]
-  #   }else{
-  #     merged_df <- rbind(merged_df, cohort_dfs[[ci]])
-  #   }
-  # }
   return(merged_df)
+}
+
+merge_blank_cohorts <- function(cohort_names, cohort_dirs){
+  df <- data.frame(Cohort=c(), `Sample names`=c(), check.names = F, stringsAsFactors = F)
+  for (ci in seq_along(cohort_dirs)){
+    sampDirs <- list.dirs(cohort_dirs[[ci]], full.names = F, recursive = F)
+    nSamps <- length(sampDirs)
+    currDF <- data.frame(Cohort=rep(cohort_names[[ci]], nSamps), 
+                         `Sample names`=sampDirs, check.names = F, stringsAsFactors = F)
+    df <- rbind.fill(df, currDF)
+  }
+  return(df)
 }
 
 

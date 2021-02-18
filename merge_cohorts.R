@@ -1,3 +1,4 @@
+#Input parameters
 cohort_names <- c("B16BHW", "BELLINI", "Triple_B", "Healthy")
 
 cohort_file_list <- c("~/analysis/flowJoMerge/2021_01_31/rawXLSXs/B16BHW.xlsx",
