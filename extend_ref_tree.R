@@ -1,7 +1,7 @@
 #Input parameters
-input_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_17/refTree_v1.yml"
+input_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_18/refTree_v1.yml"
 cohort_folder <- "~/data/Hannah/blood_flowJo/2021_02_16/Neo Adjuvant cohort/B16NBC/" # Data folder containing samples
-output_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_17/refTree_v2.yml" 
+output_refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_18/refTree_v2.yml" 
 
 #Data search parameters
 file_pattern <- "FlowJo.*\\.xls$"

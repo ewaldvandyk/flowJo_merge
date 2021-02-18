@@ -136,21 +136,61 @@ dfList2freqTypes <- function(df_list, pathPattern = "^[cC]ell"){
   return(freqTypes)
 }
 
-colNames2treePaths <- function(colNames){
-  treePaths <- gsub(pattern = '\\s*/\\s*', replacement = '/', x = colNames) #Remove spaces between "/"
-  treePaths <- gsub(pattern = '\\|.*$', replacement = '', x = treePaths) # Remove "|freq of ..." string
-  treePaths <- gsub(pattern = '\\s+$', replacement = '', x = treePaths) # Remove spaces end of path
-  treePaths <- gsub(pattern = '^\\s+', replacement = '', x = treePaths) # Remove spaces in begining of path
-  treePaths <- gsub(pattern = '\\s+', replacement = ' ', x = treePaths) # Remove all double spaces
-  treePaths <- gsub(pattern = '\\s+,', replacement = ',', x = treePaths) # Remove spaces before comma
-  treePaths <- gsub(pattern = ',\\s+', replacement = ', ', x = treePaths) # Ensure only one space after comma
+dfList2flowJoColNames <- function(df_list, pathPattern = "^[cC]ell"){
+  popColNames <- c()
+  for (i in seq_along(df_list)){
+    currPopColNames <- names(df_list[[i]])
+    keepI <- grep(pattern = pathPattern, x = currPopColNames)
+    currPopColNames <- currPopColNames[keepI]
+    popColNames <- c(popColNames, currPopColNames)
+  }
+  return(unique(popColNames))
+}
+
+flowJoColNames2PopDf <- function(flowJoColNames, tree, skipRoot = T){
+  treePaths <- colNames2treePaths(flowJoColNames, skipRoot)
+  relPops <- colNames2freqTypes(flowJoColNames)
+  relPaths <- getRelPaths(treePaths, relPops)
+  
+  popAlias <- map_chr(.x = treePaths, .f = function(x) Navigate(tree, path = x)$alias)
+  
+  relAlias <- map_chr(.x = relPaths, .f = function(x) Navigate(tree, path = x)$alias)
+  a <- data.frame(popAlias = popAlias, relAlias = relAlias, stringsAsFactors = F)
+  return(a)
+}
+
+colNames2treePaths <- function(colNames, skipRoot = F){
+  treePaths <- gsub(pattern = '\\|.*$', replacement = '', x = colNames) # Remove "|freq of ..." string
+  if (skipRoot){
+    treePaths <- gsub(pattern = '^[^/]*/', replacement = '', x = treePaths)
+  }
+  splitPaths <- str_split(pattern = "/", string = treePaths)
+  splitPaths <- map(.x = splitPaths, .f = process_population_names)
+  treePaths <- map_chr(.x = splitPaths, .f = paste, collapse = "/")
   return(treePaths)
 }
 
 colNames2freqTypes <- function(colNames){
-  freqTypes <- gsub(pattern = "^.*\\|", replacement = '', x = colNames)
-  freqTypes <- gsub(pattern = "^\\s*", replacement = '', x = freqTypes)
+  freqTypes <- gsub(pattern = "^.*\\|\\s*[fF]req(\\.|uency)\\s*of", replacement = '', x = colNames)
+  freqTypes <- process_population_names(freqTypes)
   return(freqTypes)
+}
+
+getRelPaths <- function(treePaths, relPops){
+  # NB!!! Defaults to parent if relPop not found in treepath
+  treePaths <- gsub(pattern = "/[^/]*$", replacement = "", x = treePaths)
+  patterns <- paste0(relPops, "/.*$")
+  relPaths <- pmap_chr(list(patterns, relPops, treePaths), .f = gsub)
+  return(relPaths)
+}
+
+process_population_names <- function(popnames){
+  popnames <- gsub(pattern = ",", replacement = ' , ', x = popnames)
+  popnames <- gsub(pattern = "^\\s+", replacement = '', x = popnames)
+  popnames <- gsub(pattern = "\\s+$", replacement = '', x = popnames)
+  popnames <- gsub(pattern = "\\s{2,}", replacement = ' ', x = popnames)
+  popnames <- gsub(pattern = "\\s+,", replacement = ',', x = popnames)
+  return(popnames)
 }
 
 tree2yamlFile <- function(tree, refYamlFile) {
@@ -202,6 +242,24 @@ get_strPath_alias_df <- function(tree){
 }
 
 gen_NA_matrix <- function(df_list, refTree){
+  flowJoColNames <- dfList2flowJoColNames(df_list = df_list)
+  popDF <- flowJoColNames2PopDf(flowJoColNames, tree = refTree)
+  
+  fields <- mixAliasFreqType(alias = popDF$popAlias, freqType = popDF$relAlias)
+  fields <- unique(fields)
+  sampNames <- unique(names(df_list))
+  
+  nCol <- length(fields)
+  nRow <- length(sampNames)
+  
+  naMatrix <- matrix(data = NA, nrow = nRow, ncol = nCol)
+  colnames(naMatrix) <- fields
+  rownames(naMatrix) <- sampNames
+  
+  return(naMatrix)
+}
+
+gen_NA_matrix_old <- function(df_list, refTree){
   #Get alias list from refTree
   aliasVec <- refTree$Get('alias')
   keepI <- !is.na(aliasVec)
@@ -235,6 +293,24 @@ fill_matrix <- function(df_list, refTree, dataMat, pathPattern = "^[cC]ell"){
     currColNames <- names(df_list[[filei]])
     keepI <- grep(pattern = pathPattern, x = currColNames)
     currColNames <- currColNames[keepI]
+    popDF <- flowJoColNames2PopDf(currColNames, tree = refTree)
+    fields <- mixAliasFreqType(alias = popDF$popAlias, freqType = popDF$relAlias)
+    for (coli in seq_along(currColNames)){
+      field <- currColNames[[coli]]
+      freq <- as.double(sub(pattern = "\\s*%\\s*$", replacement = "", x = df_list[[filei]][[field]][[1]]))
+      dataMat[sampName, fields[[coli]]] <- freq
+    }
+  }
+  return(dataMat)
+}
+
+fill_matrix_old <- function(df_list, refTree, dataMat, pathPattern = "^[cC]ell"){
+  sampNames <- names(df_list)
+  for (filei in seq_along(df_list)){
+    sampName <- sampNames[filei]
+    currColNames <- names(df_list[[filei]])
+    keepI <- grep(pattern = pathPattern, x = currColNames)
+    currColNames <- currColNames[keepI]
     currTreePaths <- colNames2treePaths(currColNames)
     currTreePaths <- sub(pattern = paste0('^', refTree$name, '/'), replacement = '', x = currTreePaths)
     # print(currTreePaths)
@@ -259,7 +335,7 @@ fill_matrix <- function(df_list, refTree, dataMat, pathPattern = "^[cC]ell"){
 }
 
 mixAliasFreqType <- function(alias, freqType){
-  return(paste0(alias, " (", freqType, ")"))
+  return(paste0(alias, " | Freq. of ", freqType))
 }
 
 dataMat2xlsx <- function(dataMat, xlsxFile){

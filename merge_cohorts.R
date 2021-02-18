@@ -1,12 +1,13 @@
 #Input parameters
-cohort_names <- c("B16BHW", "BELLINI", "Triple_B", "Healthy")
+cohort_names <- c("B16BHW", "B16NBC","TripleB", "BELLINI", "Healthy")
 
-cohort_file_list <- c("~/analysis/flowJoMerge/2021_01_31/rawXLSXs/B16BHW.xlsx",
-                      "~/analysis/flowJoMerge/2021_01_31/rawXLSXs/BELLINI_Trial.xlsx", 
-                      "~/analysis/flowJoMerge/2021_01_31/rawXLSXs/Triple_B.xlsx",
-                      "~/analysis/flowJoMerge/2021_01_31/rawXLSXs/Healthy_controls.xlsx")
+cohort_file_list <- c("~/analysis/flowJoMerge/2021_02_18/B16BHW.xlsx",
+                      "~/analysis/flowJoMerge/2021_02_18/B16NBC.xlsx", 
+                      "~/analysis/flowJoMerge/2021_02_18/TripleB.xlsx",
+                      "~/analysis/flowJoMerge/2021_02_18/BELLINI.xlsx",
+                      "~/analysis/flowJoMerge/2021_02_18/Healthy.xlsx")
 
-merged_out <- c("~/analysis/flowJoMerge/2021_01_31/rawXLSXs/all_cohorts.xlsx")
+merged_out <- "~/analysis/flowJoMerge/2021_02_18/all_cohorts_2021_02_18.xlsx"
 
 #Get current file location
 srcFile <- NULL

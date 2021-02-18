@@ -245,7 +245,7 @@
                 HLA-DR, CD141 subset:
                   alias: HLA-DR, CD141 subset
                   CD14+ CD16-monocytes:
-                    alias: CD14+CD16-monocytes
+                    alias: CD14+CD16- monocytes
                   CD16+ monocytes:
                     alias: CD16+ monocytes
                     CD14-dim monocytes:
