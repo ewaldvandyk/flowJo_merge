@@ -255,7 +255,7 @@
                   DCs:
                     alias: DCs
                     HLA-DR, CD33 subset:
-                      alias: HLA-DR, CD33 subset
+                      alias: DC HLA-DR, CD33 subset
                       CD1c- DCs:
                         alias: CD1c- DCs
                       CD1c+ DCs:
@@ -263,7 +263,7 @@
             PDCs:
               alias: pDCs
       Live cells:
-        alias: Live cells (B cell panel)
+        alias: Live cells
         B cells:
           alias: Total B cells
           CD27- IgD-:

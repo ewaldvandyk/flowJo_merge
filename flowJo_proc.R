@@ -152,11 +152,29 @@ flowJoColNames2PopDf <- function(flowJoColNames, tree, skipRoot = T){
   relPops <- colNames2freqTypes(flowJoColNames)
   relPaths <- getRelPaths(treePaths, relPops)
   
-  popAlias <- map_chr(.x = treePaths, .f = function(x) Navigate(tree, path = x)$alias)
+  popAlias <- map_chr(.x = treePaths, .f = navigateTreeAlias, tree)
+  relAlias <- map_chr(.x = relPaths, .f = navigateTreeAlias, tree)
+  if (any(is.na(popAlias))){
+    na_paths <- treePaths[is.na(popAlias)]
+    message("The following cohort paths either don't have aliases or are not in the reference tree:")
+    for (na_path in na_paths) message(na_path)
+    stop("Reference tree is incomplete. Use 'extend_ref_tree.R' or manually add aliases to reference tree")
+  }
+  if (any(is.na(relAlias))){
+    na_paths <- relAlias[is.na(relAlias)]
+    message("The following cohort paths don't have aliases")
+    for (na_path in na_paths) message(na_path)
+    stop("Reference tree is incomplete. Use 'extend_ref_tree.R' or manually add aliases to reference tree")
+  }
   
-  relAlias <- map_chr(.x = relPaths, .f = function(x) Navigate(tree, path = x)$alias)
+  
   a <- data.frame(popAlias = popAlias, relAlias = relAlias, stringsAsFactors = F)
   return(a)
+}
+
+navigateTreeAlias <- function(path, tree, NULL_replace = NA_character_){
+  alias <- Navigate(tree, path = path)$alias
+  if (!is.null(alias)) alias else NULL_replace
 }
 
 colNames2treePaths <- function(colNames, skipRoot = F){
