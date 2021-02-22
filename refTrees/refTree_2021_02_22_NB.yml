@@ -1,0 +1,323 @@
+|
+  name: Cells
+  Single Cells:
+    alias: Single Cells
+    CD3+:
+      alias: CD3+ (before live gate)
+      Live T cells:
+        alias: Total T cells
+        pan gd TCR+ vd1- vd2-:
+          alias: pan gd TCR+ vd1- vd2-
+        Total IL-17:
+          alias: Total IL-17
+          stimulated: TRUE
+        vd1, Pan gd TCR subset:
+          alias: vd1, Pan gd TCR subset
+          ab T cells:
+            alias: ab T cells
+            CD4+:
+              alias: CD4+ (Tregs+conv.CD4)
+              CD4+:
+                alias: conventional CD4 T cells
+                CTLA4+ CD4+:
+                  alias: CTLA4+ CD4 T cells
+                CTLA4+ CD4+ & Total PD1+ CD4+:
+                  alias: CTLA4+PD1+ CD4 T cells
+                IFNg+:
+                  alias: IFNg+ CD4 T cells
+                  stimulated: TRUE
+                IL-17+:
+                  alias: IL-17+ CD4 T cells
+                  stimulated: TRUE
+                'Q1: CCR7-, CD45RA+':
+                  alias: effector CD4 T cells
+                'Q1: IFNg-, TNFa+':
+                  alias: CD4 IFNg-, TNFa+
+                  stimulated: TRUE
+                'Q2: CCR7+, CD45RA+':
+                  alias: naive CD4 T cells
+                'Q2: IFNg+, TNFa+':
+                  alias: CD4 IFNg+, TNFa+
+                  stimulated: TRUE
+                'Q3: CCR7+, CD45RA-':
+                  alias: central memory CD4 T cells
+                'Q3: IFNg+, TNFa-':
+                  alias: CD4 IFNg+, TNFa-
+                  stimulated: TRUE
+                'Q4: CCR7-, CD45RA-':
+                  alias: effector memory CD4 T cells
+                'Q4: IFNg-, TNFa-':
+                  alias: CD4 IFNg-, TNFa-
+                  stimulated: TRUE
+                TNF+:
+                  alias: TNF+ CD4 T cells
+                  stimulated: TRUE
+                Total PD1+ CD4+:
+                  alias: PD1+ CD4 T cells
+              Tregs:
+                alias: Total Tregs
+                CTLA-4+:
+                  alias: CTLA-4+ Tregs
+                PD1+:
+                  alias: PD1+ Tregs
+                Treg I:
+                  alias: Treg I
+                Treg II:
+                  alias: Treg II
+                Treg III:
+                  alias: Treg III
+            CD8+:
+              alias: CD8 T cells
+              CTLA4+ CD8+:
+                alias: CTLA4+ CD8 T cells
+              CTLA4+ CD8+ & Total PD1+ CD8+:
+                alias: CTLA4+PD1+ CD8 T cells
+              IFNg+:
+                alias: IFNg+ CD8 T cells
+                stimulated: TRUE
+              IL-17+:
+                alias: IL-17+ CD8 T cells
+                stimulated: TRUE
+              'Q1: CCR7-, CD45RA+':
+                alias: effector CD8 T cells
+              'Q1: IFNg-, TNFa+':
+                alias: CD8 IFNg-, TNFa+
+                stimulated: TRUE
+              'Q2: CCR7+, CD45RA+':
+                alias: naive CD8 T cells
+              'Q2: IFNg+, TNFa+':
+                alias: CD8 IFNg+, TNFa+
+                stimulated: TRUE
+              'Q3: CCR7+, CD45RA-':
+                alias: central memory CD8 T cells
+              'Q3: IFNg+, TNFa-':
+                alias: CD8 IFNg+, TNFa-
+                stimulated: TRUE
+              'Q4: CCR7-, CD45RA-':
+                alias: effector memory CD8 T cells
+              'Q4: IFNg-, TNFa-':
+                alias: CD8 IFNg-, TNFa-
+                stimulated: TRUE
+              TNFa+:
+                alias: TNFa+ CD8 T cells
+                stimulated: TRUE
+              Total PD1+ CD8+:
+                alias: PD1+ CD8 T cells
+            Double positive:
+              alias: CD4 CD8 double positive T cells
+          vd2+:
+            alias: vd2+
+            IFNg+:
+              alias: IFNg+ vd2
+              stimulated: TRUE
+            IL17+:
+              alias: IL17+ vd2
+              stimulated: TRUE
+            TNF+:
+              alias: TNF+ vd2
+              stimulated: TRUE
+        vd1+:
+          alias: vd1+
+          IFNg+:
+            alias: IFNg+ vd1
+            stimulated: TRUE
+          IL17+:
+            alias: IL17+ vd1
+            stimulated: TRUE
+          TNF+:
+            alias: TNF+ vd1
+            stimulated: TRUE
+    Live:
+      CD3+ T cells:
+        alias: Total T cells
+        vd1, Pan gd TCR subset:
+          alias: vd1, Pan gd TCR subset
+        vd1, vd2 subset:
+          CD4+:
+            alias: CD4+ (Tregs+conv.CD4)
+            CD4+:
+              alias: conventional CD4 T cells
+              CTLA4+ CD4+:
+                alias: CTLA4+ CD4 T cells
+              CTLA4+ CD4+ & Total PD1+ CD4+:
+                alias: CTLA4+PD1+ CD4 T cells
+              Ki-67+:
+                alias: Total Ki-67+ CD4 T cells
+                CD39+:
+                  alias: Ki-67+CD39+ CD4 T cells
+                PD1+:
+                  alias: Ki67+PD1+ CD4 T cells
+                TIGIT+:
+                  alias: Ki67+TIGIT+ CD4 T cells
+              'Q1: CCR7-, CD45RA+':
+                alias: effector CD4 T cells
+              'Q2: CCR7+, CD45RA+':
+                alias: naive CD4 T cells
+              'Q3: CCR7+, CD45RA-':
+                alias: central memory CD4 T cells
+              'Q4: CCR7-, CD45RA-':
+                alias: effector memory CD4 T cells
+              Total PD1+ CD4+:
+                alias: PD1+ CD4 T cells
+                CD39+:
+                  alias: PD1+CD39+ CD4 T cells
+                Ki-67+:
+                  alias: PD1+Ki-67+ CD4 T cells
+                TIGIT+:
+                  alias: PD1+TIGIT+ CD4 T cells
+            Tregs:
+              alias: Total Tregs
+              CTLA-4+:
+                alias: CTLA-4+ Tregs
+              PD1+:
+                alias: PD1+ Tregs
+              Treg I:
+                alias: Treg I
+              Treg II:
+                alias: Treg II
+              Treg III:
+                alias: Treg III
+          CD8+:
+            alias: CD8 T cells
+            CTLA4+ CD8+:
+              alias: CTLA4+ CD8 T cells
+            CTLA4+ CD8+ & Total PD1+ CD8+:
+              alias: CTLA4+PD1+ CD8 T cells
+            Ki-67+:
+              alias: Total Ki-67+ CD8 T cells
+              CD39+:
+                alias: Ki-67+CD39+ CD8 T cells
+              PD1+:
+                alias: Ki-67+PD1+ CD8 T cells
+              TIGIT+:
+                alias: Ki-67+TIGIT+ CD8 T cells
+            'Q1: CCR7-, CD45RA+':
+              alias: effector CD8 T cells
+            'Q2: CCR7+, CD45RA+':
+              alias: naive CD8 T cells
+            'Q3: CCR7+, CD45RA-':
+              alias: central memory CD8 T cells
+            'Q4: CCR7-, CD45RA-':
+              alias: effector memory CD8 T cells
+            Total PD1+ CD8+:
+              alias: PD1+ CD8 T cells
+              CD39+:
+                alias: PD1+CD39+ CD8 T cells
+              Ki-67+:
+                alias: PD1+Ki-67+ CD8 T cells
+              TIGIT+:
+                alias: PD1+TIGIT+ CD8 T cells
+          Double positive:
+            alias: CD4 CD8 double positive T cells
+        vd1+:
+          alias: vd1+
+        vd2+:
+          alias: vd2+
+    Single Cells:
+      alias: Single Cells
+      B cells:
+        alias: B cells (before live gate)
+        Live B cells:
+          alias: Total B cells
+          CD27- IgD-:
+            alias: CD27- IgD- B cells
+          Naive CD27- IgD+:
+            alias: Naive CD27- IgD+ B cells
+          Non-switched:
+            alias: Non-switched B cells
+          Switched memory CD27+ IgD-:
+            alias: Switched memory CD27+ IgD-
+            IgM only:
+              alias: IgM only switched memory B cells
+            IgM-:
+              alias: IgM-
+              Memory B cells CD27+ CD38-:
+                alias: CD27+CD38- Memory B cells
+              Plasma cells_blasts CD27+ CD38+:
+                alias: CD27+CD38+ Plasmablasts
+      Lineage negative live:
+        alias: Lineage negative live
+        Granulocytes:
+          alias: Granulocytes
+          Eosinophils:
+            alias: Eosinophils
+          Neutrophils:
+            alias: Neutrophils
+            cKIT+:
+              alias: cKIT+ Neutrophils
+            DAF FM:
+              alias: DAF FM Neutrophils
+        Low scatter:
+          alias: Low scatter
+          Basophils:
+            alias: Basophils
+          HLA-DR, FceRIa subset:
+            alias: HLA-DR, FceRIa subset
+            CD303, CD123 subset:
+              alias: CD303, CD123 subset
+              HLA-DR, CD33 subset:
+                alias: HLA-DR, CD33 subset
+                CD141-hi:
+                  alias: CD141-hi
+                CD141-hi DCs:
+                  alias: CD141-hi DCs
+                HLA-DR, CD141 subset:
+                  alias: HLA-DR, CD141 subset
+                  CD14+ CD16-monocytes:
+                    alias: CD14+CD16-monocytes
+                  CD16+ monocytes:
+                    alias: CD16+ monocytes
+                    CD14-dim monocytes:
+                      alias: CD14 dim monocytes
+                    CD14+CD16+ monocytes:
+                      alias: CD14+CD16+ monocytes
+                  DCs:
+                    alias: DCs
+                    HLA-DR, CD33 subset:
+                      alias: HLA-DR, CD33 subset
+                      CD1c- DCs:
+                        alias: CD1c- DCs
+                      CD1c+ DCs:
+                        alias: CD1c+ DCs
+            PDCs:
+              alias: pDCs
+      Live cells:
+        alias: Live cells (B cell panel)
+        B cells:
+          alias: Total B cells
+          CD27- IgD-:
+            alias: CD27- IgD- B cells
+          Naive CD27- IgD+:
+            alias: Naive CD27- IgD+ B cells
+          Non-switched:
+            alias: Non-switched B cells
+          Switched memory CD27+ IgD-:
+            alias: Switched memory CD27+ IgD-
+            IgM only:
+              alias: IgM only switched memory B cells
+            IgM-:
+              alias: IgM-
+              Memory B cells CD20+ CD38-_intermediate:
+                alias: CD20+CD38_int Memory B cells
+              Memory B cells CD27+ CD38-:
+                alias: CD27+CD38- Memory B cells
+              Plasma cells_blasts CD27+ CD38+:
+                alias: CD27+CD38+ Plasmablasts
+              Plasmablasts CD20- CD38hi:
+                alias: CD20+CD38+ Plasmablasts
+        Not B cells low scatter:
+          alias: Not B cells low scatter
+          NK cells NKG2D+ CD3-:
+            alias: NK cells NKG2D+ CD3-
+            NK cells:
+              alias: Total NK cells
+              CD56-bright CD27-:
+                alias: CD56_hi CD27- NK cells
+              CD56-bright CD27+:
+                alias: CD56_hi CD27+ NK cells
+              CD56-dim CD27-:
+                alias: CD56_int CD27- NK cells
+              CD56-dim CD27+:
+                alias: CD56_int CD27+ NK cells
+      Lymphocytes:
+        alias: Lymphocytes (from myeloid panel)
