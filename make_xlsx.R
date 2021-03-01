@@ -1,14 +1,14 @@
 #Input parameters
-refTree_file <- "~/analysis/flowJoMerge/testing/2021_02_19/refTree_v0_3.yml" #Text file with reference tree and aliases
+refTree_file <- "~/devel/R/flowJo_merge/refTrees/refTree_2021_02_22_NB_EVD.yml" #Text file with reference tree and aliases
 
-cohort_folder <- "~/data/Hannah/blood_flowJo/2021_02_16/BELLINI Trial/" # Data folder containing samples
-output_xlsx <- "~/analysis/flowJoMerge/testing/2021_02_19/BELLINI.xlsx" #Output xlsx file with population frequency counts
+cohort_folder <- "~/data/Hannah/blood_flowJo/2021_02_24/Healthy controls/" # Data folder containing samples
+output_xlsx <- "~/analysis/flowJoMerge/2021_02_25/Healthy.xlsx" #Output xlsx file with population frequency counts
 
 
 #Data search parameters
 file_pattern <- "FlowJo.*\\.xls$"
 time_pattern <- "1\\s*([sS][tT][eE]|[dD][eE]|[sS][tT]|[nN][dD]|[rR][dD]|[tT][hH])?\\s*timepoint\\s*$"
-# time_pattern <- NULL # Comment out if you want to use timepoint subfolders
+time_pattern <- NULL # Comment out if you want to use timepoint subfolders
 
 #Get current file location
 srcFile <- NULL

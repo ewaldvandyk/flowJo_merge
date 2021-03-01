@@ -1,12 +1,12 @@
-cp_cohort <- function(fromDir, toDir, file_pattern = "FlowJo"){
-  dir.create(path = toDir, recursive = F, showWarnings = T)
-  sampDirs <- list.dirs(fromDir, full.names = F, recursive = T)
-  for (sampDir in sampDirs){
-    inSampDir <- file.path(fromDir, sampDir)
-    outSampDir <- file.path(toDir, sampDir)
-    dir.create(path = outSampDir, recursive = T, showWarnings = T)
-    cp_sampFiles(inSampDir = inSampDir, outSampDir = outSampDir, file_pattern = file_pattern)
-  }
+cp_cohort <- function(fromDir, toDir, file_pattern = "FlowJo.*\\.xls$"){
+  files <- dir(path = fromDir, pattern = file_pattern, recursive = T)
+  fromFiles <- file.path(fromDir, files)
+  toFiles <- file.path(toDir, files)
+  toDirs <- unique(dirname(toFiles))
+  print(toDirs)
+  require(purrr)
+  walk(toDirs, dir.create, recursive = T)
+  file.copy(from = fromFiles, to = toFiles, overwrite = F, recursive = F)
 }
 
 cp_sampFiles <- function(inSampDir, outSampDir, file_pattern = "FlowJo"){
