@@ -27,8 +27,8 @@ freqDF2relPopFreq <- function(freqDF, relPop = "Single Cells"){
     freqSampDF <- freqDF[sampi,]
     samp_calc <- cohort_calc(freqSampDF = freqSampDF)
     for (popi in seq_along(popFields)){
-      currFreq <- samp_calc(popName=popFields[popi])
-      newPopDF[[newPopFields[[popi]]]][[sampi]] <- currFreq
+      currFreqStruct <- samp_calc(popName=popFields[popi])
+      newPopDF[[newPopFields[[popi]]]][[sampi]] <- currFreqStruct$freq
     }
   }
   
@@ -42,19 +42,23 @@ setup_cohort_freqCalc <- function(popPairDF, relPop = "Single Cells"){
   setup_sample_freqCalc <- function(freqSampDF){
     force(freqSampDF)
     freqLog <- c()
+    depthLog <- c()
     lockLog <- c()
     
     calcPopFreq <- function(popName){
       # If popName is the relative population then return 100% (Since relPop/relPop = 1)
       if (popName == relPop){
-        return(100)
+        freqStruct <- list(freq = 100, depth = 0)
+        return(freqStruct)
       }
       # Return value if already logged
       if (popName %in% names(freqLog)){
-        return(freqLog[[popName]])
+        freqStruct <- list(freq = freqLog[[popName]], depth = depthLog[[popName]])
+        return(freqStruct)
       }
       if (popName %in% lockLog){
-        return(NA_real_)
+        freqStruct <- list(freq = NA_real_, depth = NA_integer_)
+        return(freqStruct)
       }
       
       lockLog <<- c(lockLog, popName)
@@ -65,38 +69,63 @@ setup_cohort_freqCalc <- function(popPairDF, relPop = "Single Cells"){
       
       mainis <- which(popPairDF$popMain == popName & !(popPairDF$popRel %in% lockLog))
       mainsVec <- rep(NA_real_, length(mainis))
+      mainDepthVec <- rep(NA_integer_, length(mainis))
       for (i in seq_along(mainsVec)){
-        mainsVec[i] <- (freqSampDF[[popPairDF$fieldName[[mainis[[i]]]]]]/100)*
-          calcPopFreq(popPairDF$popRel[[mainis[[i]]]])
+        currPopFreqStruct <- calcPopFreq(popPairDF$popRel[[mainis[[i]]]])
+        mainsVec[[i]] <- (freqSampDF[[popPairDF$fieldName[[mainis[[i]]]]]]/100)*
+          currPopFreqStruct$freq
+        mainDepthVec[[i]] <- currPopFreqStruct$depth + 1
       }
       
       relis <- which(popPairDF$popRel == popName & !(popPairDF$popMain %in% lockLog))
       relsVec <- rep(NA_real_, length(relis))
+      relDepthVec <- rep(NA_integer_, length(relis))
       for (i in seq_along(relsVec)){
-        relsVec[i] <- (calcPopFreq(popPairDF$popMain[[relis[[i]]]])*100)/
+        currPopFreqStruct <- calcPopFreq(popPairDF$popMain[[relis[[i]]]])
+        relsVec[[i]] <- (currPopFreqStruct$freq*100)/
           freqSampDF[[popPairDF$fieldName[[relis[[i]]]]]]
+        relDepthVec[[i]] <- currPopFreqStruct$depth + 1
       }
       calcVec <- c(mainsVec, relsVec)
+      depthVec <- c(mainDepthVec, relDepthVec)
       if (length(calcVec[!is.na(calcVec)]) > 1){
         print(freqSampDF$`Sample names`)
         print(popName)
         print(popPairDF[mainis,])
         print(popPairDF[relis,])
+        print(depthVec)
         print(calcVec)  
       }
       
-      calcValue <- mean(calcVec, na.rm = T)
-      if (is.nan(calcValue)){
+      notNaI <- !is.na(calcVec)
+      calcVec <- calcVec[notNaI]
+      depthVec <- depthVec[notNaI]
+      if (length(calcVec) == 0){
         calcValue <- NA_real_
+        currDepth <- NA_integer_
+      } else {
+        minDepth <- min(depthVec)
+        minDepthI <- depthVec == minDepth
+        calcValue <- mean(calcVec[minDepthI])
+        currDepth <- minDepth
       }
       
+      # calcValue <- mean(calcVec, na.rm = T)
+      # if (is.nan(calcValue)){
+      #   calcValue <- NA_real_
+      # }
+      
       if (!(is.na(calcValue) && someLocked)){
-        currLog <- calcValue
-        names(currLog) <- popName
-        freqLog <<- c(freqLog, currLog)
+        currFreqLog <- calcValue
+        names(currFreqLog) <- popName
+        freqLog <<- c(freqLog, currFreqLog)
+        currDepthLog <- currDepth
+        names(currDepthLog) <- popName
+        depthLog <<- c(depthLog, currDepthLog)
       }
       lockLog <<- setdiff(lockLog, popName)
-      return(calcValue)
+      freqStruct <- list(freq = calcValue, depth = currDepth)
+      return(freqStruct)
     }
   }
 }
