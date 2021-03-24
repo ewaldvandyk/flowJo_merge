@@ -1,3 +1,12 @@
+#Install and attach packages
+required_packages <- c("purrr", "data.tree", "DiagrammeR", "xlsx", "yaml", "stringr", "plyr")
+new_packages <- setdiff(required_packages, rownames(installed.packages()))
+install.packages(new_packages)
+for (pkg in required_packages){
+  library(pkg, character.only = T)
+}
+
+
 freqDF2ObservedPopPairs <- function(freqDF, fieldPattern = "\\s*\\|\\s*Freq\\.\\s+of\\s*"){
   dfFields <- names(freqDF)
   I <- grep(pattern = fieldPattern, x = dfFields)
@@ -7,14 +16,25 @@ freqDF2ObservedPopPairs <- function(freqDF, fieldPattern = "\\s*\\|\\s*Freq\\.\\
   return(popPairDF)
 }
 
-freqDF2relPopFreq <- function(freqDF, relPop = "Single Cells"){
+freqDF2relPopFreq <- function(freqDF, refTree, relPop = "Single Cells", flowJoProcEnv){
   #Setup cohort frequency calculator
   popPairDF <- freqDF2ObservedPopPairs(freqDF)
   cohort_calc <- setup_cohort_freqCalc(popPairDF=popPairDF, relPop = relPop)
   
-
   # Initialize return data.frame
   popFields <- unique(popPairDF$popMain)
+  allPaths <- flowJoProcEnv$get_strPath_alias_df(refTree)
+  popPaths <- allPaths[allPaths$alias %in% popFields,]
+  relPaths <- allPaths[allPaths$alias %in% relPop,]
+  popI <- c()
+  for (relPath in relPaths$pathString){
+    currI <- grep(pattern = relPath, x = popPaths$pathString, fixed = T)
+    popI <- union(popI, currI)
+  }
+  popPaths <- popPaths[popI,]
+  popFields <- unique(popPaths$alias)
+  
+  
   newPopFields <- paste0(popFields, " | Freq. of ", relPop)
   numPops <- length(newPopFields)
   numSamps <- nrow(freqDF)
@@ -32,6 +52,7 @@ freqDF2relPopFreq <- function(freqDF, relPop = "Single Cells"){
     }
   }
   
+  # return(popPaths)
   return(newPopDF)
 }
 

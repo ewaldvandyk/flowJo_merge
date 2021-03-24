@@ -1,4 +1,5 @@
 cohorts_freq_xlsx <- "~/analysis/flowJoMerge/2021_02_25/all_cohorts_2021_02_25.xlsx"
+refTree_file <- "~/devel/R/flowJo_merge/refTrees/refTree_2021_02_22_NB_EVD.yml"
 cohorts_perML_xlsx <- "~/analysis/flowJoMerge/2021_02_25/all_cohorts_perML_2021_02_25.xlsx"
 
 #Get current file location
@@ -19,4 +20,6 @@ source(file.path(flowJo_folder, "freq_proc.R"), local = freqProc)
 #Execute
 freqDF <- read.xlsx(file = cohorts_freq_xlsx, sheetIndex = 1, 
                     as.data.frame = T, stringsAsFactors = F, check.names = F)
-popMains <- freqProc$freqDF2relPopFreq(freqDF, relPop = "Single Cells")
+refTree <- flowJoProc$load_ref_tree(refYamlFile = refTree_file)
+popMains <- freqProc$freqDF2relPopFreq(freqDF, refTree = refTree, relPop = "Single Cells", flowJoProcEnv = flowJoProc)
+# popMains <- freqProc$freqDF2relPopFreq(freqDF, refTree = refTree, relPop = "Total B cells", flowJoProcEnv = flowJoProc)
