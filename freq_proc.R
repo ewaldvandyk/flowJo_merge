@@ -6,6 +6,23 @@ for (pkg in required_packages){
   library(pkg, character.only = T)
 }
 
+filterOnFlag <- function(freqDF, refTree, flagParam ="stimulated", valueKeep = F, naDefault = F, fieldPattern = "\\s*\\|\\s*Freq\\.\\s+of\\s*"){
+  alias <- refTree$Get("alias", traversal = "pre-order")
+  flag  <- refTree$Get(flagParam, traversal = "pre-order")
+  flag[is.na(flag)] <- naDefault
+  aliasKeep <- alias[flag==valueKeep]
+  aliasKeep <- aliasKeep[!is.na(aliasKeep)]
+  
+  popPairDF <- freqDF2ObservedPopPairs(freqDF, fieldPattern)
+  colKeep <- popPairDF$fieldName[popPairDF$popMain %in% aliasKeep]
+  
+  dfFields <- names(freqDF)
+  metaI <- !grepl(pattern = fieldPattern, x = dfFields)
+  dataI <- dfFields %in% colKeep
+  
+  freqDF <- freqDF[metaI | dataI]
+  return(freqDF)
+}
 
 freqDF2ObservedPopPairs <- function(freqDF, fieldPattern = "\\s*\\|\\s*Freq\\.\\s+of\\s*"){
   dfFields <- names(freqDF)
@@ -51,8 +68,7 @@ freqDF2relPopFreq <- function(freqDF, refTree, relPop = "Single Cells", flowJoPr
       newPopDF[[newPopFields[[popi]]]][[sampi]] <- currFreqStruct$freq
     }
   }
-  
-  # return(popPaths)
+
   return(newPopDF)
 }
 

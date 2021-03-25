@@ -21,5 +21,5 @@ source(file.path(flowJo_folder, "freq_proc.R"), local = freqProc)
 freqDF <- read.xlsx(file = cohorts_freq_xlsx, sheetIndex = 1, 
                     as.data.frame = T, stringsAsFactors = F, check.names = F)
 refTree <- flowJoProc$load_ref_tree(refYamlFile = refTree_file)
-popMains <- freqProc$freqDF2relPopFreq(freqDF, refTree = refTree, relPop = "Single Cells", flowJoProcEnv = flowJoProc)
-# popMains <- freqProc$freqDF2relPopFreq(freqDF, refTree = refTree, relPop = "Total B cells", flowJoProcEnv = flowJoProc)
+freqPerScDF <- freqProc$freqDF2relPopFreq(freqDF, refTree = refTree, relPop = "Single Cells", flowJoProcEnv = flowJoProc)
+freqPerScDF <- freqProc$filterOnFlag(freqPerScDF, refTree, flagParam ="stimulated", valueKeep = F, naDefault = F)
