@@ -15,6 +15,7 @@ filterOnFlag <- function(freqDF, refTree, flagParam ="stimulated", valueKeep = F
   
   popPairDF <- freqDF2ObservedPopPairs(freqDF, fieldPattern)
   colKeep <- popPairDF$fieldName[popPairDF$popMain %in% aliasKeep]
+  print(aliasKeep)
   
   dfFields <- names(freqDF)
   metaI <- !grepl(pattern = fieldPattern, x = dfFields)
@@ -31,6 +32,21 @@ freqDF2ObservedPopPairs <- function(freqDF, fieldPattern = "\\s*\\|\\s*Freq\\.\\
   popPairMat <- str_split(string = dfFields, pattern = fieldPattern, simplify = T)
   popPairDF <- data.frame(popMain = popPairMat[,1], popRel = popPairMat[,2], fieldName = dfFields, stringsAsFactors = F)
   return(popPairDF)
+}
+
+freq2cPerMl <- function(freqPerCellDF, cellPerMlDF, fieldPattern = "\\s*\\|\\s*Freq\\.\\s+of\\s*"){
+  common_cols <- intersect(names(freqPerCellDF), names(cellPerMlDF))
+  perMlCol <- setdiff(names(cellPerMlDF), common_cols)
+  popPairsDF <- freqDF2ObservedPopPairs(freqPerCellDF, fieldPattern = fieldPattern)
+  mergedDF <- merge(x = cellPerMlDF, y = freqPerCellDF, all.x = F, all.y = T)
+  
+  perMlMat <- matrix(data = NA_real_, nrow = nrow(mergedDF), ncol = length(popPairsDF$fieldName))
+  colnames(perMlMat) <- paste0(popPairsDF$popMain, " | Count per ML")
+  for (i in seq_along(popPairsDF$fieldName)){
+    perMlMat[,i] <- mergedDF[[perMlCol]]*mergedDF[[popPairsDF$fieldName[[i]]]]
+  }
+  countDF <- data.frame(mergedDF[common_cols], perMlMat, check.names = F, stringsAsFactors = F)
+  return(countDF)
 }
 
 freqDF2relPopFreq <- function(freqDF, refTree, relPop = "Single Cells", flowJoProcEnv){

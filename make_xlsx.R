@@ -1,8 +1,8 @@
 #Input parameters
 refTree_file <- "~/devel/R/flowJo_merge/refTrees/refTree_2021_02_22_NB_EVD.yml" #Text file with reference tree and aliases
 
-cohort_folder <- "~/data/Hannah/blood_flowJo/2021_02_24/Healthy controls/" # Data folder containing samples
-output_xlsx <- "~/analysis/flowJoMerge/2021_02_25/Healthy.xlsx" #Output xlsx file with population frequency counts
+cohort_folder <- "~/data/Hannah/blood_flowJo/2021_02_24/Triple B/" # Data folder containing samples
+output_xlsx <- "~/analysis/flowJoMerge/2021_03_30/TNBC.xlsx" #Output xlsx file with population frequency counts
 
 
 #Data search parameters

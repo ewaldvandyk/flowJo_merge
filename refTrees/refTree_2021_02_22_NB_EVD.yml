@@ -128,7 +128,7 @@
             alias: TNF+ vd1
             stimulated: TRUE
     Live:
-      alias: Total Live
+      alias: Total Live (T cell panel)
       CD3+ T cells:
         alias: Total T cells
         vd1, Pan gd TCR subset:
@@ -284,7 +284,7 @@
             PDCs:
               alias: pDCs
       Live cells:
-        alias: Live cells
+        alias: Total Live (B cell panel)
         B cells:
           alias: Total B cells
           CD27- IgD-:
