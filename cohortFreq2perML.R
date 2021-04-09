@@ -1,8 +1,8 @@
 cohorts_freq_xlsx <- "~/analysis/flowJoMerge/2021_03_30/all_cohorts_freq_2021_03_30.xlsx"
-cohorts_cellPerML_xlsx <- "~/data/Hannah/blood_flowJo/2021_03_25/all_cohorts_count_per_ML_2021_03_25.xlsx"
+cohorts_cellPerML_xlsx <- "~/data/Hannah/blood_flowJo/2021_04_07/all_cohorts_totalCountsPerMl_NB.xlsx"
 
 refTree_file <- "~/devel/R/flowJo_merge/refTrees/refTree_2021_02_22_NB_EVD.yml"
-cohorts_perML_xlsx <- "~/analysis/flowJoMerge/2021_03_30/all_cohorts_perML_2021_03_30.xlsx"
+cohorts_perML_xlsx <- "~/analysis/flow_interim/processed_data/all_cohorts_perML_2021_04_08_v2.xlsx"
 
 #Get current file location
 srcFile <- NULL
@@ -30,5 +30,4 @@ freqPerScDF <- freqProc$freqDF2relPopFreq(freqDF, refTree = refTree, relPop = "S
 cPerMlDF    <- freqProc$freq2cPerMl(freqPerScDF, cellPerMlDF)
 cPerMlDF    <- freqProc$filterOnFlag(cPerMlDF, refTree, flagParam = "stimulated", valueKeep = F, naDefault = F, fieldPattern = "\\s*\\|\\s*Count\\s*")
 flowJoProc$df2xlsx(cPerMlDF, cohorts_perML_xlsx)
-# freqPerScDF <- freqProc$filterOnFlag(freqPerScDF, refTree, flagParam ="stimulated", valueKeep = F, naDefault = F)
 
