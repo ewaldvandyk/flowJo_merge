@@ -12,11 +12,38 @@ load_clinical_ad_hoc <- function(inFile){
   clinDF$`Sample names` <- as.character(clinDF$`Sample names`)
   clinDF$BMI <- round(as.numeric(levels(clinDF$BMI))[clinDF$BMI], digits = 1)
   clinDF$Age <- round(as.numeric(levels(clinDF$`Age `))[clinDF$`Age `])
+  clinDF$StageType <- combine_stage_subtype(clinDF)
   clinI <- names(clinDF) %in% c("Cohort", "Sample names", "Harmonized subtype", "Simple stage", 
-                                "Node positive", "Age", "BMI", "Grade of tumor")
+                                "Node positive", "Age", "BMI", "Grade of tumor", "StageType")
+  
+  stage_type <- combine_stage_subtype(clinDF)
+  
   clinDF <- clinDF[clinI]
   
   return(clinDF)
+}
+
+combine_stage_subtype <- function(clinDF){
+  stageI <- clinDF$`Simple stage` == 4
+  stage <- rep("e", length(clinDF$`Simple stage`))
+  stage[stageI] <- "l"
+  stage[is.na(stageI)] <- NA_character_
+  
+  subtype <- clinDF$`Harmonized subtype`
+  old_lvls <- levels(subtype)
+  new_lvls <- old_lvls;
+  new_lvls[old_lvls == "ER+"] <- "E"
+  new_lvls[old_lvls == "ER+HER2+"] <- "EH"
+  new_lvls[old_lvls == "HER2+"] <- "H"
+  new_lvls[old_lvls == "TNBC"] <- "TN"
+  levels(subtype) <- new_lvls
+  isnaI <- is.na(subtype) | is.na(stage)
+  isHD <- !is.na(subtype) & subtype == "HD"
+  
+  stage_subtype <- paste(stage, subtype, sep = "_")
+  stage_subtype[isnaI] <- NA_character_
+  stage_subtype[isHD] <- "HD"
+  return(as.factor(stage_subtype))
 }
 
 bmi2factor <- function(BMInum, 
