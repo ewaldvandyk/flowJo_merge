@@ -10,11 +10,12 @@ load_clinical_ad_hoc <- function(inFile){
   clinDF <- read.xlsx(file = inFile, sheetIndex = 1, 
             as.data.frame = T, stringsAsFactors = T, check.names = F)
   clinDF$`Sample names` <- as.character(clinDF$`Sample names`)
-  clinDF$BMI <- round(as.numeric(levels(clinDF$BMI))[clinDF$BMI], digits = 1)
+  clinDF$BMI <- bmi2factor(round(as.numeric(levels(clinDF$BMI))[clinDF$BMI], digits = 1))
+  clinDF$`Date of blood draw` <- date2factor(clinDF$`Date of blood draw`) 
   clinDF$Age <- round(as.numeric(levels(clinDF$`Age `))[clinDF$`Age `])
   clinDF$StageType <- combine_stage_subtype(clinDF)
   clinI <- names(clinDF) %in% c("Cohort", "Sample names", "Harmonized subtype", "Simple stage", 
-                                "Node positive", "Age", "BMI", "Grade of tumor", "StageType")
+                                "Node positive", "Date of blood draw", "Age", "BMI", "Grade of tumor", "StageType")
   
   stage_type <- combine_stage_subtype(clinDF)
   
@@ -57,3 +58,24 @@ bmi2factor <- function(BMInum,
   }
   return(factor(BMIstr, levels = lvls, ordered = T))
 }
+
+date2factor <- function(dates, 
+                        lvls = c("2017-18", "2019-prePandemic", "inPandemic"), 
+                        thrsh = c("2019-01-01", "2020-03-11")){
+  
+  timeStr <- rep(NA_character_, length(dates))
+  thrsh <- c("1900-01-01", thrsh, "2099-12-31")
+  for (i in seq_along(thrsh[-1])){
+    timeStr[dates >= thrsh[[i]] & dates < thrsh[[i+1]]] <- lvls[[i]]
+  }
+  return(factor(timeStr, levels = lvls, ordered = T))
+}
+
+
+
+
+
+
+
+
+
