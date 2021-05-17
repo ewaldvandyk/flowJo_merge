@@ -1,5 +1,5 @@
 #Install and attach packages
-required_packages <- c("purrr", "data.tree", "DiagrammeR", "xlsx", "yaml", "stringr", "plyr")
+required_packages <- c("purrr", "data.tree", "DiagrammeR", "xlsx", "yaml", "stringr", "plyr", "car")
 new_packages <- setdiff(required_packages, rownames(installed.packages()))
 install.packages(new_packages)
 for (pkg in required_packages){
@@ -13,15 +13,30 @@ load_clinical_ad_hoc <- function(inFile){
   clinDF$BMI <- bmi2factor(round(as.numeric(levels(clinDF$BMI))[clinDF$BMI], digits = 1))
   clinDF$`Date of blood draw` <- date2factor(clinDF$`Date of blood draw`) 
   clinDF$Age <- round(as.numeric(levels(clinDF$`Age `))[clinDF$`Age `])
-  clinDF$StageType <- combine_stage_subtype(clinDF)
-  clinI <- names(clinDF) %in% c("Cohort", "Sample names", "Harmonized subtype", "Simple stage", 
-                                "Node positive", "Date of blood draw", "Age", "BMI", "Grade of tumor", "StageType")
+  clinDF$`Simple subtype` <- car::recode(clinDF$`Harmonized subtype`, 
+                                         "c('ER+HER2+', 'HER2+') = 'HER2+';
+                                          'TNBC' = 'TN'")
+  clinDF$`Binary stage` <- car::recode(clinDF$`Simple stage`, 
+                                         "0 = 'none';
+                                         c(1,2,3) = 'early';
+                                          4 = 'late'")
+  clinDF$StageType <- combine_stage_subtype_V2(clinDF)
+  clinI <- c("Cohort", "Sample names", "Harmonized subtype", "Simple subtype", "Simple stage", "Binary stage", "StageType",
+             "Node positive", "Date of blood draw", "Age", "BMI", "Grade of tumor")
   
-  stage_type <- combine_stage_subtype(clinDF)
   
   clinDF <- clinDF[clinI]
   
   return(clinDF)
+}
+
+combine_stage_subtype_V2 <- function(clinDF){
+  stage_subtype <- map2_chr(clinDF$`Binary stage`, clinDF$`Simple subtype`, function(x,y) paste0(x, ":", y))
+  NaI <- grep(pattern = "NA", x = stage_subtype, fixed = T)
+  stage_subtype[NaI] <- NA_character_
+  stage_subtype <- factor(stage_subtype)
+  levels(stage_subtype)[levels(stage_subtype) == "none:HD"] <- "HD"
+  return(stage_subtype)
 }
 
 combine_stage_subtype <- function(clinDF){

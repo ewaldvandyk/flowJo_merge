@@ -1,8 +1,8 @@
 clinFile <- "~/data/Hannah/blood_flowJo/2021_03_25/all_cohorts_clinical_2021_03_31_EVD.xlsx"
-# dataFile <- "~/analysis/flow_interim/processed_data/all_cohorts_perML_2021_04_08_v2.xlsx"
-# fullFile <- "~/analysis/flow_interim/processed_data/all_cohorts_clin_perML_2021_05_13.xlsx"
-dataFile <- "~/analysis/flow_interim/processed_data/all_cohorts_freqSC_2021_05_13.xlsx"
-fullFile <- "~/analysis/flow_interim/processed_data/all_cohorts_clin_freqSC_2021_05_13.xlsx"
+dataFile <- "~/analysis/flow_interim/processed_data/all_cohorts_perML_2021_04_08_v2.xlsx"
+fullFile <- "~/analysis/flow_interim/processed_data/all_cohorts_clin_perML_2021_05_17.xlsx"
+# dataFile <- "~/analysis/flow_interim/processed_data/all_cohorts_freqSC_2021_05_13.xlsx"
+# fullFile <- "~/analysis/flow_interim/processed_data/all_cohorts_clin_freqSC_2021_05_17.xlsx"
 
 
 #Get current file location
