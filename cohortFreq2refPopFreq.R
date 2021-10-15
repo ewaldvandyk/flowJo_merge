@@ -1,10 +1,9 @@
+cohorts_freq_xlsx <- "~/devel/R/flowJo_merge/output/2021_10_15/bellini.xlsx"
+refTree_file <- "~/devel/R/flowJo_merge/refTrees/refTree_2021_10_15_EVD.yml"
+
+cohorts_baseFreq_xlsx <- "~/devel/R/flowJo_merge/output/2021_10_15/bellini_perSC.xlsx"
+
 refPop <- "Single Cells"
-
-cohorts_freq_xlsx <- "~/analysis/flowJoMerge/2021_03_30/all_cohorts_freq_2021_03_30.xlsx"
-refTree_file <- "~/devel/R/flowJo_merge/refTrees/refTree_2021_02_22_NB_EVD.yml"
-
-cohorts_baseFreq_xlsx <- "~/analysis/flow_interim/processed_data/all_cohorts_freqSC_2021_05_13.xlsx"
-
 
 #Get current file location
 srcFile <- NULL

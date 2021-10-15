@@ -9,6 +9,7 @@ for (pkg in required_packages){
 cohortDir2dfList <-function(cohortDir, 
                             file_pattern = "FlowJo.*\\.xls$", 
                             time_pattern = NULL){
+  
   sampDirs <- list.dirs(cohortDir, full.names = F, recursive = F)
   df_list <- list()
   for (sampDirName in sampDirs){
