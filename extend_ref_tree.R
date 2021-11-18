@@ -5,7 +5,7 @@ output_refTree_file <- "~/devel/R/flowJo_merge/refTrees/refTree_2021_10_15_EVD.y
 
 #Data search parameters
 file_pattern <- "FlowJo.*\\.xls$"
-time_pattern <- "1\\s*([sS][tT][eE]|[dD][eE]|[sS][tT]|[nN][dD]|[rR][dD]|[tT][hH])?\\s*timepoint\\s*$"
+time_pattern <- "[^.]?1\\s*([sS][tT][eE]|[dD][eE]|[sS][tT]|[nN][dD]|[rR][dD]|[tT][hH])?\\s*timepoint\\s*$"
 # time_pattern <- NULL # Comment out if you want to use timepoint subfolders
 
 #Get current file location
